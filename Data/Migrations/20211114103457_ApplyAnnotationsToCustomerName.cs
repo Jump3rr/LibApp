@@ -2,7 +2,7 @@
 
 namespace LibApp.Data.Migrations
 {
-    public partial class ApplyAnnotationsToCustomerNamecs : Migration
+    public partial class ApplyAnnotationsToCustomerName : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

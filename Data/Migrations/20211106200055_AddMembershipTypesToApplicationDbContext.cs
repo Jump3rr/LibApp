@@ -19,7 +19,7 @@ namespace LibApp.Data.Migrations
                 {
                     Id = table.Column<byte>(type: "tinyint", nullable: false),
                     SignUpFee = table.Column<short>(type: "smallint", nullable: false),
-                    DurationInMonth = table.Column<byte>(type: "tinyint", nullable: false),
+                    DurationInMonths = table.Column<byte>(type: "tinyint", nullable: false),
                     DiscountRate = table.Column<byte>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>

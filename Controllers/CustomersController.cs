@@ -1,41 +1,107 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using System.Threading.Tasks;
-using LibApp.Models;
+using LibApp.Data;
 using LibApp.ViewModels;
-
+using Microsoft.EntityFrameworkCore;
+using LibApp.Models;
+using System;
 
 namespace LibApp.Controllers
 {
     public class CustomersController : Controller
     {
-        public ViewResult Index()
-        {
-            var customers = GetCustomers();
+        private readonly ApplicationDbContext _context;
 
-            return View(customers);
+        public CustomersController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public ViewResult Index()
+        {            
+            return View();
         }
 
         public IActionResult Details(int id)
         {
-            var customer = GetCustomers().SingleOrDefault(c => c.Id == id);
+            var customer = _context.Customers
+                .Include(c => c.MembershipType)
+                .SingleOrDefault(c => c.Id == id);
 
             if (customer == null)
             {
                 return Content("User not found");
             }
+
             return View(customer);
         }
 
-        private IEnumerable<Customer> GetCustomers()
+        public IActionResult New()
         {
-            return new List<Customer>
+            var membershipTypes = _context.MembershipTypes.ToList();
+
+            var viewModel = new CustomerFormViewModel()
             {
-                new Customer { Id = 1, Name = "Jan Kowalski"},
-                new Customer { Id = 2, Name = "Monika Nowak"}
-            }; 
+                MembershipTypes = membershipTypes
+            };
+
+            return View("CustomerForm", viewModel);
+        }
+
+        public IActionResult Edit(int id)
+        {
+            var customer = _context.Customers.SingleOrDefault(c => c.Id == id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new CustomerFormViewModel(customer)
+            {
+                MembershipTypes = _context.MembershipTypes.ToList()
+            };
+
+            return View("CustomerForm", viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Save(Customer customer)
+        {
+            if (!ModelState.IsValid)
+            {
+                var viewModel = new CustomerFormViewModel(customer)
+                {
+                    MembershipTypes = _context.MembershipTypes.ToList()
+                };
+
+                return View("CustomerForm", viewModel);
+            }
+
+            if (customer.Id == 0)
+            {
+                _context.Customers.Add(customer);
+            }
+            else
+            {
+                var customerInDb = _context.Customers.Single(c => c.Id == customer.Id);
+                customerInDb.Name = customer.Name;
+                customerInDb.Birthdate = customer.Birthdate;
+                customerInDb.MembershipTypeId = customer.MembershipTypeId;
+                customerInDb.HasNewsletterSubscribed = customer.HasNewsletterSubscribed;
+            }
+
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return RedirectToAction("Index", "Customers");
+
         }
     }
 }

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211114183307_AddMembershipTypesToApplicationDbContext")]
+    [Migration("20211106200055_AddMembershipTypesToApplicationDbContext")]
     partial class AddMembershipTypesToApplicationDbContext
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,7 +52,7 @@ namespace LibApp.Data.Migrations
                     b.Property<byte>("DiscountRate")
                         .HasColumnType("tinyint");
 
-                    b.Property<byte>("DurationInMonth")
+                    b.Property<byte>("DurationInMonths")
                         .HasColumnType("tinyint");
 
                     b.Property<short>("SignUpFee")
