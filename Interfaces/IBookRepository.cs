@@ -6,7 +6,7 @@ using LibApp.Models;
 
 namespace LibApp.Interfaces
 {
-    interface IBookRepository
+    public interface IBookRepository
     {
         IEnumerable<Book> GetBooks();
         Book GetBookById(int bookId);

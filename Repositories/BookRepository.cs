@@ -1,6 +1,7 @@
 ﻿using LibApp.Data;
 using LibApp.Interfaces;
 using LibApp.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace LibApp.Repositories
         }
         public IEnumerable<Book> GetBooks()
         {
-            return _context.Books;
+            return _context.Books.Include(b => b.Genre);
         }
 
         public void AddBook(Book book) => _context.Books.Add(book);
