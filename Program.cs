@@ -8,6 +8,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using LibApp.Models;
 using Microsoft.Extensions.DependencyInjection;
+using LibApp.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibApp
 {
@@ -16,12 +18,26 @@ namespace LibApp
         public static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-            
-            using (var scope = host.Services.CreateScope())
+
+            /*using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
 
                 SeedData.Initialize(services);
+            }*/
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            var context = services.GetRequiredService<ApplicationDbContext>();
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            try
+            {
+                context.Database.Migrate();
+                SeedData.Initialize(services);
+                logger.LogInformation("Database initialized");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error while migrating data");
             }
 
             host.Run();

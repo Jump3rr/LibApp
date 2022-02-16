@@ -18,13 +18,29 @@ namespace LibApp.Repositories
         }
         public IEnumerable<Book> GetBooks()
         {
-            return _context.Books.Include(b => b.Genre);
+            return _context.Books.Include(x => x.Genre).ToList();
         }
-
         public void AddBook(Book book) => _context.Books.Add(book);
-        public Book GetBookById(int bookId) => _context.Books.Find(bookId);
-        public void DeleteBook(int bookId) => _context.Books.Remove(GetBookById(bookId));
-        public void UpdateBook(Book book) => _context.Books.Update(book);
+        public Book GetBookById(int bookId)
+        {
+            return _context.Books.Include(x => x.Genre).SingleOrDefault(x => x.Id == bookId);
+        }
+        public void DeleteBook(int bookId)
+        {
+            var book = this.GetBookById(bookId);
+            _context.Books.Remove(book);
+        }
+        public void UpdateBook(Book book)
+        {
+            var bookToUpdate = _context.Books.Find(book.Id);
+
+            bookToUpdate.Name = book.Name;
+            bookToUpdate.AuthorName = book.AuthorName;
+            bookToUpdate.GenreId = book.GenreId;
+            bookToUpdate.ReleaseDate = book.ReleaseDate;
+            bookToUpdate.DateAdded = book.DateAdded;
+            bookToUpdate.NumberInStock = book.NumberInStock;
+        }
         public void Save() => _context.SaveChanges();
     }
 }

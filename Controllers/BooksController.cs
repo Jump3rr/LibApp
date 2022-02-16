@@ -8,6 +8,7 @@ using LibApp.ViewModels;
 using LibApp.Data;
 using Microsoft.EntityFrameworkCore;
 using LibApp.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibApp.Controllers
 {
@@ -22,23 +23,19 @@ namespace LibApp.Controllers
             _bookRepository = bookRepository;
         }
 
+        [Authorize(Roles = "User,StoreManager,Owner")]
         public IActionResult Index()
         {
-            var books = _bookRepository.GetBooks()
-                .ToList();
-
+            var books = _bookRepository.GetBooks();
             return View(books);
         }
 
         public IActionResult Details(int id)
         {
-            var book = _context.Books
-                .Include(b => b.Genre)
-                .SingleOrDefault(b => b.Id == id);
-
+            var book = _bookRepository.GetBookById(id);
             return View(book);
         }
-
+        [Authorize(Roles = "StoreManager,Owner")]
         public IActionResult Edit(int id)
         {
             var book = _context.Books.SingleOrDefault(b => b.Id == id);
@@ -55,7 +52,7 @@ namespace LibApp.Controllers
 
             return View("BookForm", viewModel);
         }
-
+        [Authorize(Roles = "StoreManager,Owner")]
         public IActionResult New()
         {
             var viewModel = new BookFormViewModel
@@ -69,25 +66,24 @@ namespace LibApp.Controllers
         [HttpPost]
         public IActionResult Save(Book book)
         {
+            if (!ModelState.IsValid)
+            {
+                return New();
+            }
+
             if (book.Id == 0)
             {
                 book.DateAdded = DateTime.Now;
-                _context.Books.Add(book);
+                _bookRepository.AddBook(book);
             }
             else
             {
-                var bookInDb = _context.Books.Single(b => b.Id == book.Id);
-                bookInDb.Name = book.Name;
-                bookInDb.AuthorName = book.AuthorName;
-                bookInDb.GenreId = book.GenreId;
-                bookInDb.ReleaseDate = book.ReleaseDate;
-                bookInDb.DateAdded = book.DateAdded;
-                bookInDb.NumberInStock = book.NumberInStock;
+                _bookRepository.UpdateBook(book);
             }
 
             try
             {
-                _context.SaveChanges();
+                _bookRepository.Save();
             }
             catch (DbUpdateException e)
             {
@@ -96,14 +92,5 @@ namespace LibApp.Controllers
 
             return RedirectToAction("Index", "Books");
         }
-
-        [HttpGet]
-        [Route("api/books")]
-        public IList<Book> GetBooks()
-        {
-            return _bookRepository.GetBooks().ToList();
-        } 
-
-
     }
 }
