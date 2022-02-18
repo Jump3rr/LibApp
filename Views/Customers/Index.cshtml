@@ -34,7 +34,7 @@
                     {
                         data: "name",
                         render: function (data, type, customer) {
-                            return "<a href='customers/edit/" + customer.id + "'>" + customer.name + "</a>";
+                            return "<a href='customers/details/" + customer.id + "'>" + customer.name + "</a>";
                         }
                     },
                     {
@@ -44,15 +44,10 @@
                         data: "id",
                         render: function (data) {
                             var deleteBtn = "<button class='btn btn-secondary js-delete' data-customer-id=" + data + ">Delete</button>";
-                            var detailsBtn = "<input type='button' class='btn btn-secondary onclick='location.href = '/Customers/Details' ' value='Details' />";
 
-                            @if(User.IsInRole("Administrator"))
+                            @if(User.IsInRole("Owner"))
                             {
-                                <text>return deleteBtn + detailsBtn;</text>
-                            }
-                            else
-                            {
-                                <text>return detailsBtn;</text>
+                                <text>return deleteBtn;</text>
                             }
                         }
                     }

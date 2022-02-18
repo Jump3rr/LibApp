@@ -2,10 +2,8 @@
 using LibApp.Interfaces;
 using LibApp.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace LibApp.Repositories
 {
@@ -21,14 +19,14 @@ namespace LibApp.Repositories
             return _context.Books.Include(x => x.Genre).ToList();
         }
         public void AddBook(Book book) => _context.Books.Add(book);
-        public Book GetBookById(int bookId)
-        {
-            return _context.Books.Include(x => x.Genre).SingleOrDefault(x => x.Id == bookId);
-        }
         public void DeleteBook(int bookId)
         {
             var book = this.GetBookById(bookId);
             _context.Books.Remove(book);
+        }
+        public Book GetBookById(int bookId)
+        {
+            return _context.Books.Include(x => x.Genre).SingleOrDefault(x => x.Id == bookId);
         }
         public void UpdateBook(Book book)
         {
