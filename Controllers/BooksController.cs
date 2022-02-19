@@ -56,7 +56,7 @@ namespace LibApp.Controllers
         public IActionResult New()
         {
             var viewModel = new BookFormViewModel
-            {
+            { 
                 Genres = _context.Genre.ToList()
             };
 
@@ -66,11 +66,6 @@ namespace LibApp.Controllers
         [HttpPost]
         public IActionResult Save(Book book)
         {
-            if (!ModelState.IsValid)
-            {
-                return New();
-            }
-
             if (book.Id == 0)
             {
                 book.DateAdded = DateTime.Now;

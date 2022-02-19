@@ -43,12 +43,7 @@
                     {
                         data: "id",
                         render: function (data) {
-                            var deleteBtn = "<button class='btn btn-secondary js-delete' data-customer-id=" + data + ">Delete</button>";
-
-                            @if(User.IsInRole("Owner"))
-                            {
-                                <text>return deleteBtn;</text>
-                            }
+                            return "<button class='btn btn-secondary js-delete' data-customer-id=" + data + ">Delete</button>";
                         }
                     }
                 ]
@@ -56,10 +51,14 @@
         });
     </script>
 
+
+
+
     <script>
         $(document).ready(function () {
             var table = $("#customers").DataTable();
             $("#customers").on("click", ".js-delete", function () {
+
                 var button = $(this);
                 bootbox.confirm({
                     title: "Delete user",

@@ -32,7 +32,7 @@ namespace LibApp.Controllers.Api
         [HttpGet]
         public IEnumerable<BookDto> GetBooks(string query = null)
         {
-            var booksQuery = _bookRepository.GetBooks().Where(x => x.NumberAvailable > 0).AsQueryable();
+            var booksQuery = _bookRepository.GetBooks().AsQueryable();//.Where(x => x.NumberAvailable > 0).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query))
             {

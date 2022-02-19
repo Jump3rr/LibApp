@@ -4,18 +4,14 @@ using LibApp.Dtos;
 using LibApp.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
-using HttpDeleteAttribute = Microsoft.AspNetCore.Mvc.HttpDeleteAttribute;
-using HttpGetAttribute = Microsoft.AspNetCore.Mvc.HttpGetAttribute;
-using HttpPostAttribute = Microsoft.AspNetCore.Mvc.HttpPostAttribute;
-using HttpPutAttribute = Microsoft.AspNetCore.Mvc.HttpPutAttribute;
-using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
+using LibApp.Repositories;
+using LibApp.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.Controllers.Api
 {
@@ -55,7 +51,7 @@ namespace LibApp.Controllers.Api
 
             if (customer == null)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                throw new System.Web.Http.HttpResponseException(System.Net.HttpStatusCode.NotFound);
             }
 
             Console.WriteLine("Request END");
@@ -68,7 +64,7 @@ namespace LibApp.Controllers.Api
         {
             if (!ModelState.IsValid)
             {
-                throw new HttpResponseException(HttpStatusCode.BadRequest);
+                throw new System.Web.Http.HttpResponseException(System.Net.HttpStatusCode.BadRequest);
             }
 
             var customer = _mapper.Map<Customer>(customerDto);
@@ -85,13 +81,13 @@ namespace LibApp.Controllers.Api
         {
             if (!ModelState.IsValid)
             {
-                throw new HttpResponseException(HttpStatusCode.BadRequest);
+                throw new System.Web.Http.HttpResponseException(System.Net.HttpStatusCode.BadRequest);
             }
 
             var customerInDb = _context.Customers.Single(c => c.Id == customerDto.Id);
             if (customerInDb == null)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                throw new System.Web.Http.HttpResponseException(System.Net.HttpStatusCode.NotFound);
             }
 
             _mapper.Map(customerDto, customerInDb);
@@ -101,16 +97,17 @@ namespace LibApp.Controllers.Api
         // DELETE /api/customers/{id}
         [HttpDelete("{id}")]
         [Authorize(Roles = "Owner")]
-        public void DeleteCustomer(int id)
+        public IActionResult DeleteCustomer(int id)
         {
             var customerInDb = _context.Customers.Single(c => c.Id == id);
             if (customerInDb == null)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                throw new System.Web.Http.HttpResponseException(System.Net.HttpStatusCode.NotFound);
             }
 
             _context.Customers.Remove(customerInDb);
             _context.SaveChanges();
+            return Ok();
         }
 
         private ApplicationDbContext _context;
