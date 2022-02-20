@@ -60,6 +60,7 @@ namespace LibApp.Controllers.Api
 
         // POST /api/customers
         [HttpPost]
+        [Authorize(Roles = "Owner")]
         public CustomerDto CreateCustomer(CustomerDto customerDto)
         {
             if (!ModelState.IsValid)
@@ -77,6 +78,7 @@ namespace LibApp.Controllers.Api
 
         // PUT /api/customers/{id}
         [HttpPut("{id}")]
+        [Authorize(Roles = "Owner")]
         public void UpdateCustomer(int id, CustomerDto customerDto)
         {
             if (!ModelState.IsValid)

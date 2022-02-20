@@ -43,7 +43,7 @@ namespace LibApp.Controllers.Api
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Owner")]
+        [Authorize(Roles = "StoreManager,Owner")]
         public IActionResult RemoveBook(int id)
         {
             _bookRepository.DeleteBook(id);
